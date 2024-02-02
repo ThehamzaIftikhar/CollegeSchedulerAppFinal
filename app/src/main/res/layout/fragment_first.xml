@@ -1,35 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstFragment">
+    android:padding="16dp"
+    tools:context=".FirstFragment"
+    android:background="@color/gray">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
 
-        <Button
-            android:id="@+id/button_first"
-            android:layout_width="wrap_content"
+
+    <!-- CardView for "Classes" -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardClasses"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardBackgroundColor="@color/dark_gray">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/next"
-            app:layout_constraintBottom_toTopOf="@id/textview_first"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/textview_first"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/imageClasses"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/gt2" />
+
+            <TextView
+                android:id="@+id/titleClasses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Classes"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:layout_toStartOf="@id/imageClasses"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/descriptionClasses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Organize your classes!"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:layout_below="@id/titleClasses"
+                android:layout_toStartOf="@id/imageClasses"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAssignments"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cardClasses"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardBackgroundColor="@color/gold">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/lorem_ipsum"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_first" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imageAssignments"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ment" /> <!-- Replace with the appropriate icon for assignments -->
+
+            <TextView
+                android:id="@+id/titleAssignments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Assignments"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:layout_toStartOf="@id/imageAssignments"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/descriptionAssignments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Track due dates and progress for each assignment!"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:layout_below="@id/titleAssignments"
+                android:layout_toStartOf="@id/imageAssignments"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <!-- CardView for "Exams" -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardExams"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cardAssignments"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardBackgroundColor="@color/navy_blue">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imageExams"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/exam1" /> <!-- Replace with your exams icon -->
+
+            <TextView
+                android:id="@+id/titleExams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exams"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:layout_toStartOf="@id/imageExams"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/descriptionExams"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Input and track important exam details!"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:layout_below="@id/titleExams"
+                android:layout_toStartOf="@id/imageExams"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <!-- CardView for "To Do List" -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardToDoList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cardExams"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardBackgroundColor="@color/dark_gray">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imageToDoList"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/to" /> <!-- Replace with your to-do list icon -->
+
+            <TextView
+                android:id="@+id/titleToDoList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To Do List"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:layout_toStartOf="@id/imageToDoList"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/descriptionToDoList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create and manage personalized to-do lists!"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:layout_below="@id/titleToDoList"
+                android:layout_toStartOf="@id/imageToDoList"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
