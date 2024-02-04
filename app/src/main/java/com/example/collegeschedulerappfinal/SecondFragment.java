@@ -15,11 +15,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.collegeschedulerappfinal.databinding.FragmentSecondBinding;
 
+import java.util.ArrayList;
+
 public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
     TextView inputtedCourse, inputtedTime, inputtedInstructor;
     Button submitButton, previous;
+    String name, time, instructor;
+    private ArrayList<CollegeEntry> collegeEntries = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,15 +62,29 @@ public class SecondFragment extends Fragment {
         binding.SubmitClasses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //GET TEXT VIEWS
                  inputtedCourse = getView().findViewById(R.id.CourseNameTextView);
                  inputtedTime = getView().findViewById(R.id.CourseTimeTextView);
                  inputtedInstructor = getView().findViewById(R.id.CourseInstructorTextView);
 
+                //SET VISIBILITY
                 inputtedCourse.setVisibility(View.INVISIBLE);
                 inputtedTime.setVisibility(View.INVISIBLE);
                 inputtedInstructor.setVisibility(View.INVISIBLE);
                 submitButton.setVisibility(View.INVISIBLE);
                 previous.setVisibility(View.VISIBLE);
+
+                //CONSTRUCTOR INPUTS
+                name = inputtedCourse.getText().toString();
+                time = inputtedCourse.getText().toString();
+                instructor = inputtedCourse.getText().toString();
+
+                CollegeEntry entry = new CollegeEntry(name, time, instructor);
+                collegeEntries.add(entry);
+
+//                TextView entryTextView = new TextView();
+//                entryTextView.setText(entry.toString());
+
 
             }
         });
