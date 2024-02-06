@@ -1,30 +1,35 @@
 package com.example.collegeschedulerappfinal;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.appcompat.app.AppCompatActivity;
-
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.collegeschedulerappfinal.databinding.FragmentSecondBinding;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class SecondFragment extends Fragment {
 
+    private static final String PREFS_NAME = "MyPrefs";
+    private static final String CLASS_LIST_KEY = "classList";
     private FragmentSecondBinding binding;
-    TextView inputtedCourse, inputtedTime, inputtedInstructor;
-    Button submitButton, previous;
-    String name, time, instructor;
-    private ArrayList<CollegeEntry> collegeEntries = new ArrayList<>();
 
+    private ArrayList<ClassModel> classesList;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> adapter;
+    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,74 +40,197 @@ public class SecondFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inputtedCourse = view.findViewById(R.id.CourseNameTextView);
-        inputtedCourse.setVisibility(View.INVISIBLE);
 
-        inputtedTime = view.findViewById(R.id.CourseTimeTextView);
-        inputtedTime.setVisibility(View.INVISIBLE);
+        // Load classesList from SharedPreferences
+        classesList = loadClassesList();
 
-        inputtedInstructor = view.findViewById(R.id.CourseInstructorTextView);
-        inputtedInstructor.setVisibility(View.INVISIBLE);
+        recyclerView = view.findViewById(R.id.classRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        submitButton = view.findViewById(R.id.SubmitClasses);
-        submitButton.setVisibility(View.INVISIBLE);
+        adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_class, parent, false);
+                return new ViewHolder(view);
+            }
 
-        previous = view.findViewById(R.id.button_second);
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                ClassModel classModel = classesList.get(position);
+                ViewHolder viewHolder = (ViewHolder) holder;
 
-        //PREVIOUS BUTTON
+                viewHolder.courseNameText.setText("Course Name: " + classModel.getClassName());
+                viewHolder.timeText.setText("Time: " + classModel.getTime());
+                viewHolder.instructorText.setText("Instructor: " + classModel.getInstructor());
+
+                viewHolder.editButton.setOnClickListener(v -> showEditClassDialog(position));
+                viewHolder.deleteButton.setOnClickListener(v -> deleteClass(position));
+            }
+
+            @Override
+            public int getItemCount() {
+                return classesList.size();
+            }
+
+            class ViewHolder extends RecyclerView.ViewHolder {
+                TextView courseNameText;
+                TextView timeText;
+                TextView instructorText;
+                Button editButton;
+                Button deleteButton;
+
+                ViewHolder(@NonNull View itemView) {
+                    super(itemView);
+                    courseNameText = itemView.findViewById(R.id.courseNameText);
+                    timeText = itemView.findViewById(R.id.timeText);
+                    instructorText = itemView.findViewById(R.id.instructorText);
+                    editButton = itemView.findViewById(R.id.editButton);
+                    deleteButton = itemView.findViewById(R.id.deleteButton);
+                }
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
+
+        Button addButton = view.findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddClassDialog();
+            }
+        });
+
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+
+                // Code for navigating to the FirstFragment
+
+                saveClassesList();
             }
         });
+    }
 
-        //SUBMIT
-        binding.SubmitClasses.setOnClickListener(new View.OnClickListener() {
+    private void showEditClassDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Edit Class");
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_class, null);
+        builder.setView(dialogView);
+
+        final EditText courseNameInput = dialogView.findViewById(R.id.courseNameInput);
+        final EditText timeInput = dialogView.findViewById(R.id.timeInput);
+        final EditText instructorInput = dialogView.findViewById(R.id.instructorInput);
+
+        ClassModel classModel = classesList.get(position);
+        courseNameInput.setText(classModel.getClassName());
+        timeInput.setText(classModel.getTime());
+        instructorInput.setText(classModel.getInstructor());
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                //GET TEXT VIEWS
-                 inputtedCourse = getView().findViewById(R.id.CourseNameTextView);
-                 inputtedTime = getView().findViewById(R.id.CourseTimeTextView);
-                 inputtedInstructor = getView().findViewById(R.id.CourseInstructorTextView);
+            public void onClick(DialogInterface dialog, int which) {
+                String courseName = courseNameInput.getText().toString().trim();
+                String time = timeInput.getText().toString().trim();
+                String instructor = instructorInput.getText().toString().trim();
 
-                //SET VISIBILITY
-                inputtedCourse.setVisibility(View.INVISIBLE);
-                inputtedTime.setVisibility(View.INVISIBLE);
-                inputtedInstructor.setVisibility(View.INVISIBLE);
-                submitButton.setVisibility(View.INVISIBLE);
-                previous.setVisibility(View.VISIBLE);
-
-                //CONSTRUCTOR INPUTS
-                name = inputtedCourse.getText().toString();
-                time = inputtedCourse.getText().toString();
-                instructor = inputtedCourse.getText().toString();
-
-                CollegeEntry entry = new CollegeEntry(name, time, instructor);
-                collegeEntries.add(entry);
-
-//                TextView entryTextView = new TextView();
-//                entryTextView.setText(entry.toString());
-
-
+                if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
+                    editClass(position, courseName, time, instructor);
+                }
             }
         });
 
-        //ADD NEW CLASSES
-        binding.addClasses.setOnClickListener(new View.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                inputtedCourse.setVisibility(View.VISIBLE);
-                inputtedTime.setVisibility(View.VISIBLE);
-                inputtedInstructor.setVisibility(View.VISIBLE);
-                submitButton.setVisibility(View.VISIBLE);
-                previous.setVisibility(View.INVISIBLE);
-
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
         });
 
+        builder.show();
+    }
 
+    private void editClass(int position, String courseName, String time, String instructor) {
+        ClassModel editedClass = classesList.get(position);
+        editedClass.setClassName(courseName);
+        editedClass.setTime(time);
+        editedClass.setInstructor(instructor);
+
+        adapter.notifyDataSetChanged();
+
+        // Save the updated classesList to SharedPreferences
+        saveClassesList();
+    }
+
+    private void deleteClass(int position) {
+        classesList.remove(position);
+        adapter.notifyDataSetChanged();
+
+        // Save the updated classesList to SharedPreferences
+        saveClassesList();
+    }
+
+    private void showAddClassDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Add Class");
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_class, null);
+        builder.setView(dialogView);
+
+        final EditText courseNameInput = dialogView.findViewById(R.id.courseNameInput);
+        final EditText timeInput = dialogView.findViewById(R.id.timeInput);
+        final EditText instructorInput = dialogView.findViewById(R.id.instructorInput);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String courseName = courseNameInput.getText().toString().trim();
+                String time = timeInput.getText().toString().trim();
+                String instructor = instructorInput.getText().toString().trim();
+
+                if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
+                    addClass(courseName, time, instructor);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void addClass(String courseName, String time, String instructor) {
+        ClassModel newClass = new ClassModel(courseName, time, instructor);
+        classesList.add(newClass);
+        adapter.notifyDataSetChanged();
+
+        // Save the updated classesList to SharedPreferences
+        saveClassesList();
+    }
+
+    private void saveClassesList() {
+        // Save the classesList to SharedPreferences using Gson
+        SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(classesList);
+        editor.putString(CLASS_LIST_KEY, json);
+        editor.apply();
+    }
+
+    private ArrayList<ClassModel> loadClassesList() {
+        // Load the classesList from SharedPreferences using Gson
+        SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = prefs.getString(CLASS_LIST_KEY, null);
+        Type type = new TypeToken<ArrayList<ClassModel>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 
     @Override

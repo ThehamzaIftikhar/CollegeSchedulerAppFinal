@@ -1,0 +1,43 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/card_background">
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Title: "
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/dueDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Due Date: "
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/classText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Associated Class: "
+        android:textColor="@color/black" />
+
+    <Button
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:onClick="editAssignment" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:onClick="deleteAssignment" />
+</LinearLayout>
