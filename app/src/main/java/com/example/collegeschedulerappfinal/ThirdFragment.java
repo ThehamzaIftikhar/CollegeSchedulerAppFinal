@@ -2,6 +2,8 @@ package com.example.collegeschedulerappfinal;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,19 +11,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.collegeschedulerappfinal.databinding.FragmentThirdBinding;
-import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
-import android.content.SharedPreferences;
-import android.content.Context;
-
-
+import java.util.ArrayList;
 
 public class ThirdFragment extends Fragment {
 
@@ -43,7 +44,11 @@ public class ThirdFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        assignmentsList = new ArrayList<>();
+        // Load saved assignments if available
+        assignmentsList = loadSavedAssignments();
+        if (assignmentsList == null) {
+            assignmentsList = new ArrayList<>();  // Initialize the list if it's null
+        }
 
         recyclerView = view.findViewById(R.id.assignmentRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -95,25 +100,12 @@ public class ThirdFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         Button addAssignmentButton = view.findViewById(R.id.addAssignmentButton);
-        addAssignmentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddAssignmentDialog();
-            }
+        addAssignmentButton.setOnClickListener(v -> showAddAssignmentDialog());
+
+        binding.buttonThird.setOnClickListener(v -> {
+            // Code for navigating to other fragments or activities
+            adapter.notifyDataSetChanged();
         });
-
-        binding.buttonThird.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // Code for navigating to other fragments or activities
-
-                adapter.notifyDataSetChanged();
-            }
-        });
-
-        // Load saved assignments if available
-        loadSavedAssignments();
     }
 
     private void showAddAssignmentDialog() {
@@ -127,25 +119,17 @@ public class ThirdFragment extends Fragment {
         final EditText dueDateInput = dialogView.findViewById(R.id.dueDateInput);
         final EditText classInput = dialogView.findViewById(R.id.classInput);
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String title = titleInput.getText().toString().trim();
-                String dueDate = dueDateInput.getText().toString().trim();
-                String associatedClass = classInput.getText().toString().trim();
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String title = titleInput.getText().toString().trim();
+            String dueDate = dueDateInput.getText().toString().trim();
+            String associatedClass = classInput.getText().toString().trim();
 
-                if (!title.isEmpty() && !dueDate.isEmpty() && !associatedClass.isEmpty()) {
-                    addAssignment(title, dueDate, associatedClass);
-                }
+            if (!title.isEmpty() && !dueDate.isEmpty() && !associatedClass.isEmpty()) {
+                addAssignment(title, dueDate, associatedClass);
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
@@ -166,25 +150,17 @@ public class ThirdFragment extends Fragment {
         dueDateInput.setText(assignmentModel.getDueDate());
         classInput.setText(assignmentModel.getAssociatedClass());
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String title = titleInput.getText().toString().trim();
-                String dueDate = dueDateInput.getText().toString().trim();
-                String associatedClass = classInput.getText().toString().trim();
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String title = titleInput.getText().toString().trim();
+            String dueDate = dueDateInput.getText().toString().trim();
+            String associatedClass = classInput.getText().toString().trim();
 
-                if (!title.isEmpty() && !dueDate.isEmpty() && !associatedClass.isEmpty()) {
-                    editAssignment(position, title, dueDate, associatedClass);
-                }
+            if (!title.isEmpty() && !dueDate.isEmpty() && !associatedClass.isEmpty()) {
+                editAssignment(position, title, dueDate, associatedClass);
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
@@ -193,6 +169,7 @@ public class ThirdFragment extends Fragment {
         AssignmentModel newAssignment = new AssignmentModel(title, dueDate, associatedClass);
         assignmentsList.add(newAssignment);
         adapter.notifyDataSetChanged();
+        saveAssignments();  // Save the updated assignmentsList to SharedPreferences
     }
 
     private void editAssignment(int position, String title, String dueDate, String associatedClass) {
@@ -201,14 +178,16 @@ public class ThirdFragment extends Fragment {
         editedAssignment.setDueDate(dueDate);
         editedAssignment.setAssociatedClass(associatedClass);
         adapter.notifyDataSetChanged();
+        saveAssignments();  // Save the updated assignmentsList to SharedPreferences
     }
 
     private void deleteAssignment(int position) {
         assignmentsList.remove(position);
         adapter.notifyDataSetChanged();
+        saveAssignments();  // Save the updated assignmentsList to SharedPreferences
     }
 
-    private void loadSavedAssignments() {
+    private ArrayList<AssignmentModel> loadSavedAssignments() {
         // Load saved assignments from SharedPreferences
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String assignmentsJson = prefs.getString(ASSIGNMENT_LIST_KEY, null);
@@ -216,10 +195,9 @@ public class ThirdFragment extends Fragment {
         if (assignmentsJson != null) {
             // Use Gson to deserialize the JSON string into ArrayList
             Type assignmentListType = new TypeToken<ArrayList<AssignmentModel>>() {}.getType();
-            assignmentsList = new Gson().fromJson(assignmentsJson, assignmentListType);
-
-            // Notify the adapter of the data change
-            adapter.notifyDataSetChanged();
+            return new Gson().fromJson(assignmentsJson, assignmentListType);
+        } else {
+            return null;
         }
     }
 
@@ -239,7 +217,6 @@ public class ThirdFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        saveAssignments();
         binding = null;
     }
 }

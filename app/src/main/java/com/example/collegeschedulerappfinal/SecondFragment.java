@@ -11,13 +11,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.collegeschedulerappfinal.databinding.FragmentSecondBinding;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -43,6 +46,9 @@ public class SecondFragment extends Fragment {
 
         // Load classesList from SharedPreferences
         classesList = loadClassesList();
+        if (classesList == null) {
+            classesList = new ArrayList<>();  // Initialize the list if it's null
+        }
 
         recyclerView = view.findViewById(R.id.classRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -94,21 +100,11 @@ public class SecondFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         Button addButton = view.findViewById(R.id.addButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddClassDialog();
-            }
-        });
+        addButton.setOnClickListener(v -> showAddClassDialog());
 
-        binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // Code for navigating to the FirstFragment
-
-                saveClassesList();
-            }
+        binding.buttonSecond.setOnClickListener(v -> {
+            // Code for navigating to the FirstFragment
+            saveClassesList();
         });
     }
 
@@ -128,25 +124,17 @@ public class SecondFragment extends Fragment {
         timeInput.setText(classModel.getTime());
         instructorInput.setText(classModel.getInstructor());
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String courseName = courseNameInput.getText().toString().trim();
-                String time = timeInput.getText().toString().trim();
-                String instructor = instructorInput.getText().toString().trim();
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String courseName = courseNameInput.getText().toString().trim();
+            String time = timeInput.getText().toString().trim();
+            String instructor = instructorInput.getText().toString().trim();
 
-                if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
-                    editClass(position, courseName, time, instructor);
-                }
+            if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
+                editClass(position, courseName, time, instructor);
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
@@ -182,25 +170,17 @@ public class SecondFragment extends Fragment {
         final EditText timeInput = dialogView.findViewById(R.id.timeInput);
         final EditText instructorInput = dialogView.findViewById(R.id.instructorInput);
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String courseName = courseNameInput.getText().toString().trim();
-                String time = timeInput.getText().toString().trim();
-                String instructor = instructorInput.getText().toString().trim();
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String courseName = courseNameInput.getText().toString().trim();
+            String time = timeInput.getText().toString().trim();
+            String instructor = instructorInput.getText().toString().trim();
 
-                if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
-                    addClass(courseName, time, instructor);
-                }
+            if (!courseName.isEmpty() && !time.isEmpty() && !instructor.isEmpty()) {
+                addClass(courseName, time, instructor);
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }

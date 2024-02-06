@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/card_background">
+
+    <TextView
+        android:id="@+id/examDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exam Date: "
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/examTimeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exam Time: "
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/examLocationText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exam Location: "
+        android:textColor="@color/black" />
+
+    <Button
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:onClick="editExam"/>
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:onClick="deleteExam"/>
+
+</LinearLayout>
